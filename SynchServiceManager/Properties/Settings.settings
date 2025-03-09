@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SynchServiceNS.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="VMRun" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe</Value>
+    </Setting>
+    <Setting Name="VMList" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\vmware-automation\working\vmlist.txt</Value>
+    </Setting>
+    <Setting Name="VMFullList" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\vmware-automation\working\vmfulllist.txt</Value>
+    </Setting>
+    <Setting Name="WorkingDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\vmware-automation\working</Value>
+    </Setting>
+    <Setting Name="BackupDest" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\\192.168.1.22\public\AutomatedVmsBackup</Value>
+    </Setting>
+    <Setting Name="ShutdownVms" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BackupVms" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DeleteSnapshot" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CreateSnapshot" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseFullVMsList" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="JobRunInterval" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="JobRunTime" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">03/04/2025 02:00:00</Value>
+    </Setting>
+    <Setting Name="UseVMWareAuto" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SuspendOption" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
