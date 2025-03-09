@@ -6,7 +6,7 @@ setlocal
 
 
 
-REM 0 or 1 (1 == shutdown instead of suspending
+REM 0 or 1 (1 == shutdown instead of suspending)
 SET ShutDown=0
 REM 0 or 1 (1 == backup VM dir to network location - no use of " or ' in path)
 SET BackupVm=1
