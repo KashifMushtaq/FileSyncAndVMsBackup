@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_2A8CFDDB535C3BFBBAA33F964B35265E"
+        "OwnerKey" = "8:_ED7D19BAD7264E5C8F57DAF971FFA543"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2ACFCB80227549B0BC0BFB43E096F7DA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,12 +39,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DF82E228AD569A6D7FDFBD2E94E99479"
-        "OwnerKey" = "8:_ED7D19BAD7264E5C8F57DAF971FFA543"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_ED7D19BAD7264E5C8F57DAF971FFA543"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -46,19 +46,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D9C9FD91E243461189CB3C0D069339A3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_ED7D19BAD7264E5C8F57DAF971FFA543"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DF82E228AD569A6D7FDFBD2E94E99479"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D9C9FD91E243461189CB3C0D069339A3"
+        "OwnerKey" = "8:_2A8CFDDB535C3BFBBAA33F964B35265E"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -211,6 +211,37 @@
         }
         "File"
         {
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2A8CFDDB535C3BFBBAA33F964B35265E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:SynchServiceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_2A8CFDDB535C3BFBBAA33F964B35265E"
+                    {
+                    "Name" = "8:SynchServiceManager.exe"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:SynchServiceManager.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9619F34B52814D119A4FCAD306FEE6A5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2ACFCB80227549B0BC0BFB43E096F7DA"
             {
             "SourcePath" = "8:..\\SynchService\\SynchService.ini"
@@ -249,37 +280,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DF82E228AD569A6D7FDFBD2E94E99479"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SynchServiceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64"
-                "ScatterAssemblies"
-                {
-                    "_DF82E228AD569A6D7FDFBD2E94E99479"
-                    {
-                    "Name" = "8:SynchServiceManager.exe"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:SynchServiceManager.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_9619F34B52814D119A4FCAD306FEE6A5"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -339,7 +339,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Synch Service"
         "ProductCode" = "8:{B0055D6E-C033-47E2-9E9B-9A56148D5A0C}"
-        "PackageCode" = "8:{76D4D6F3-B5B0-42CF-A70D-903D5D9923F4}"
+        "PackageCode" = "8:{6B97E080-C69E-4EE9-86DC-CAC52F8FDBD7}"
         "UpgradeCode" = "8:{AE8FD144-4E5D-4562-8AF7-5A0DEA29FE7A}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -888,7 +888,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D9C9FD91E243461189CB3C0D069339A3"
             {
-            "SourcePath" = "8:..\\SynchServiceManager\\obj\\x64\\Debug\\SynchServiceManager.exe"
+            "SourcePath" = "8:..\\SynchServiceManager\\obj\\Release\\SynchServiceManager.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9619F34B52814D119A4FCAD306FEE6A5"
@@ -916,7 +916,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_ED7D19BAD7264E5C8F57DAF971FFA543"
             {
-            "SourcePath" = "8:..\\SynchService\\obj\\x64\\Debug\\SynchService.exe"
+            "SourcePath" = "8:..\\SynchService\\obj\\Release\\SynchService.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9619F34B52814D119A4FCAD306FEE6A5"

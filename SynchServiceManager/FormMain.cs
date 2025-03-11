@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.ServiceProcess;
 using System.Threading;
 using System.IO;
-using SynchServiceNS.Properties;
 using System.Diagnostics;
 
 namespace SynchServiceNS
@@ -91,12 +86,20 @@ namespace SynchServiceNS
 
         private void UpdateTotalVMsRunning()
         {
-            if (File.Exists(Settings.Default.VMRun))
+            string VMRun = m_INI.IniReadValue("VM-BACKUP", "VMRun");
+
+            if (File.Exists(VMRun))
             {
+                double JobRunInterval = double.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunInterval"));
+                DateTime JobRunTime = DateTime.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunTime"));
+                this.label_NextJobExeTime.Text = JobRunTime.AddDays(JobRunInterval).ToString("yyyy-MMM-dd HH-mm");
+
+                string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+
                 Process process = new Process();
-                process.StartInfo.WorkingDirectory = Settings.Default.WorkingDir;
-                process.StartInfo.FileName = Settings.Default.VMRun;
-                process.StartInfo.Arguments = string.Format("list");
+                process.StartInfo.WorkingDirectory = WorkingDir;
+                process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
+                process.StartInfo.Arguments = "list";
 
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;
@@ -199,27 +202,18 @@ namespace SynchServiceNS
         {
             try
             {
-                this.textBox_VmRun.Text = Properties.Settings.Default.VMRun;
-                this.textBox_WorkingDir.Text = Properties.Settings.Default.WorkingDir;
-                this.textBox_BackupDir.Text = Properties.Settings.Default.BackupDest;
+                this.textBox_VmRun.Text = m_INI.IniReadValue("VM-BACKUP", "VMRun");
+                this.textBox_WorkingDir.Text = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+                this.textBox_BackupDir.Text = m_INI.IniReadValue("VM-BACKUP", "BackupDest");
 
-                this.checkBox_ShutdownVMs.Checked = Properties.Settings.Default.ShutdownVms;
-                this.checkBox_BackuVMs.Checked = Properties.Settings.Default.BackupVms;
-                this.checkBox_DeleteSnapshot.Checked = Properties.Settings.Default.DeleteSnapshot;
-                this.checkBox_CreateSnapshot.Checked = Properties.Settings.Default.CreateSnapshot;
-                this.checkBox_UseFullList.Checked = Properties.Settings.Default.UseFullVMsList;
-                this.numericUpDown_BackupInterval.Value = Properties.Settings.Default.JobRunInterval;
-                this.dateTimePicker_BackupTime.Value = Properties.Settings.Default.JobRunTime;
-                this.checkBox_UseVmwareAuto.Checked = Properties.Settings.Default.UseVMWareAuto;
-                this.checkBox_SuspendOption.Checked = Properties.Settings.Default.SuspendOption;
-
-                if (this.checkBox_ShutdownVMs.Checked)
-                {
-                    this.checkBox_SuspendOption.Checked = false;
-                    this.checkBox_SuspendOption.Enabled = false;
-                    Properties.Settings.Default.SuspendOption = false;
-                    Properties.Settings.Default.Save();
-                }
+                this.checkBox_ShutdownVMs.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "ShutdownVms"));
+                this.checkBox_BackuVMs.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "BackupVms"));
+                this.checkBox_DeleteSnapshot.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "DeleteSnapshot"));
+                this.checkBox_CreateSnapshot.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "CreateSnapshot"));
+                this.checkBox_UseFullList.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "UseFullVMsList"));
+                this.numericUpDown_BackupInterval.Value = decimal.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunInterval"));
+                this.dateTimePicker_BackupTime.Value = DateTime.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunTime"));
+                this.checkBox_UseVmwareAuto.Checked = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "UseVMWareAuto"));
             }
             catch (Exception ex)
             {
@@ -325,40 +319,6 @@ namespace SynchServiceNS
 
 
 
-        private bool checkDuplicate(String FindItem, ComboBox comboBox)
-        {
-
-            if (comboBox.Items.Count > 0)
-            {
-                for (int iC = 0; iC < comboBox.Items.Count; iC++)
-                {
-                    string sVal = comboBox.Items[iC].ToString();
-                    if (sVal.Contains(FindItem) && sVal.Equals(FindItem, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }
-        private bool checkDuplicate(String FindItem, ListBox listBox)
-        {
-
-            if (listBox.Items.Count > 0)
-            {
-                for (int iC = 0; iC < listBox.Items.Count; iC++)
-                {
-                    string sVal = listBox.Items[iC].ToString();
-                    if (sVal.Contains(FindItem) && sVal.Equals(FindItem, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }
         private bool checkDuplicate(String FindItem, ListView listBox)
         {
 
@@ -375,59 +335,6 @@ namespace SynchServiceNS
 
             }
             return false;
-        }
-
-        private String getItemsPiped(ListView oObj)
-        {
-            if (oObj.Items.Count > 0)
-            {
-                String sPiped = "";
-                for (int iC = 0; iC < oObj.Items.Count; iC++)
-                {
-                    if (sPiped != "") sPiped += SPLIT_CHAR;
-                    sPiped += (String)oObj.Items[iC].SubItems[0].Text;
-                }
-                if (sPiped != "")
-                {
-                    return sPiped.ToLower();
-                }
-            }
-            return "";
-        }
-
-        private String getItemsPiped(ListBox oObj)
-        {
-            if (oObj.Items.Count > 0)
-            {
-                String sPiped = "";
-                for (int iC = 0; iC < oObj.Items.Count; iC++)
-                {
-                    if (sPiped != "") sPiped += SPLIT_CHAR;
-                    sPiped += (String)oObj.Items[iC];
-                }
-                if (sPiped != "")
-                {
-                    return sPiped.ToLower();
-                }
-            }
-            return "";
-        }
-        private String getItemsPiped(ComboBox oObj)
-        {
-            if (oObj.Items.Count > 0)
-            {
-                String sPiped = "";
-                for (int iC = 0; iC < oObj.Items.Count; iC++)
-                {
-                    if (sPiped != "") sPiped += SPLIT_CHAR;
-                    sPiped += (String)oObj.Items[iC];
-                }
-                if (sPiped != "")
-                {
-                    return sPiped.ToLower();
-                }
-            }
-            return "";
         }
 
 
@@ -673,7 +580,7 @@ namespace SynchServiceNS
         private void button_WorkingDir_Click(object sender, EventArgs e)
         {
             folderBrowserDialog.ShowNewFolderButton = false;
-            folderBrowserDialog.Description = "Please selecct working folder location";
+            folderBrowserDialog.Description = "Please select working folder location";
             DialogResult dR = folderBrowserDialog.ShowDialog();
 
             if (dR == DialogResult.OK)
@@ -687,7 +594,7 @@ namespace SynchServiceNS
                 else
                 {
                     this.textBox_WorkingDir.Text = workingFolder;
-                    Properties.Settings.Default.VMList = Path.Combine(workingFolder, "vmlist.txt"); 
+                    m_INI.IniWriteValue("VM-BACKUP", "VMList", Path.Combine(workingFolder, "vmlist.txt")); 
                 }
             }
         }
@@ -695,29 +602,13 @@ namespace SynchServiceNS
         private void button_BackupDir_Click(object sender, EventArgs e)
         {
             folderBrowserDialog.ShowNewFolderButton = false;
-            folderBrowserDialog.Description = "Please selecct a backup destination";
+            folderBrowserDialog.Description = "Please select a backup destination";
             DialogResult dR = folderBrowserDialog.ShowDialog();
 
             if (dR == DialogResult.OK)
             {
                 string backupDir = folderBrowserDialog.SelectedPath;
                 this.textBox_BackupDir.Text = backupDir;
-            }
-        }
-
-        private void checkBox_ShutdownVMs_CheckedChanged(object sender, EventArgs e)
-        {
-            if (this.checkBox_ShutdownVMs.Checked)
-            {
-                this.checkBox_SuspendOption.Enabled = false;
-                Properties.Settings.Default.SuspendOption = false;
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                this.checkBox_SuspendOption.Enabled = true;
-                Properties.Settings.Default.SuspendOption = true;
-                Properties.Settings.Default.Save();
             }
         }
 
@@ -741,7 +632,7 @@ namespace SynchServiceNS
 
         }
 
-        private void numericUpDown__BackupInterval_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_BackupInterval_ValueChanged(object sender, EventArgs e)
         {
 
         }
@@ -774,43 +665,46 @@ namespace SynchServiceNS
 
         private void button_SaveBackup_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.VMRun = this.textBox_VmRun.Text;
-            Properties.Settings.Default.WorkingDir = this.textBox_WorkingDir.Text;
-            Properties.Settings.Default.BackupDest = this.textBox_BackupDir.Text;
+            m_INI.IniWriteValue("VM-BACKUP", "VMRun", this.textBox_VmRun.Text);
+            m_INI.IniWriteValue("VM-BACKUP", "WorkingDir", this.textBox_WorkingDir.Text);
+            m_INI.IniWriteValue("VM-BACKUP", "BackupDest", this.textBox_BackupDir.Text);
 
-            Properties.Settings.Default.ShutdownVms = this.checkBox_ShutdownVMs.Checked;
-            Properties.Settings.Default.BackupVms = this.checkBox_BackuVMs.Checked;
-            Properties.Settings.Default.DeleteSnapshot = this.checkBox_DeleteSnapshot.Checked;
-            Properties.Settings.Default.CreateSnapshot = this.checkBox_CreateSnapshot.Checked;
-            Properties.Settings.Default.UseFullVMsList = this.checkBox_UseFullList.Checked;
-            Properties.Settings.Default.JobRunInterval = this.numericUpDown_BackupInterval.Value;
-            Properties.Settings.Default.JobRunTime = this.dateTimePicker_BackupTime.Value;
-            Properties.Settings.Default.UseVMWareAuto = this.checkBox_UseVmwareAuto.Checked;
+            m_INI.IniWriteValue("VM-BACKUP", "ShutdownVms", this.checkBox_ShutdownVMs.Checked ? "True":"False");
+            m_INI.IniWriteValue("VM-BACKUP", "BackupVms", this.checkBox_BackuVMs.Checked ? "True" : "False");
+            m_INI.IniWriteValue("VM-BACKUP", "DeleteSnapshot", this.checkBox_DeleteSnapshot.Checked ? "True" : "False");
+            m_INI.IniWriteValue("VM-BACKUP", "CreateSnapshot", this.checkBox_CreateSnapshot.Checked ? "True" : "False");
+            m_INI.IniWriteValue("VM-BACKUP", "UseFullVMsList", this.checkBox_UseFullList.Checked ? "True" : "False");
+            m_INI.IniWriteValue("VM-BACKUP", "JobRunInterval", this.numericUpDown_BackupInterval.Value.ToString());
+            m_INI.IniWriteValue("VM-BACKUP", "JobRunTime", this.dateTimePicker_BackupTime.Value.ToString("yyyy-MMM-dd HH:mm:ss"));
+            m_INI.IniWriteValue("VM-BACKUP", "UseVMWareAuto", this.checkBox_UseVmwareAuto.Checked ? "True" : "False");
 
-            if (this.checkBox_ShutdownVMs.Checked)
-            {
-                this.checkBox_SuspendOption.Enabled = false;
-                Properties.Settings.Default.SuspendOption = false;
-            }
-            else
-            {
-                Properties.Settings.Default.SuspendOption = this.checkBox_SuspendOption.Checked;
-            }
-
-            Properties.Settings.Default.Save();
             MessageBox.Show("Settings are saved", "Save Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion
 
         private void button_CancelBackup_Click(object sender, EventArgs e)
-        {
-            LoadBackSettings();
+        { 
+            try
+            {
+                LoadBackSettings();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Timer_Vms_Tick(object sender, EventArgs e)
         {
-            UpdateTotalVMsRunning();
+            try
+            {
+                UpdateTotalVMsRunning();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

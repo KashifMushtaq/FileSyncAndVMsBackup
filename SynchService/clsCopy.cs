@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Diagnostics;
 using File = System.IO.File;
-using SynchServiceNS.Properties;
 using System.ServiceProcess;
 
 
@@ -21,6 +20,7 @@ namespace SynchServiceNS
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         private static extern int GetShortPathName(string LongPath, StringBuilder ShortPath, int BufferSize);
 
+        private static INI m_INI = new INI();
         private static Logging m_Logger = new Logging();
         private static clsArguments m_arg;
 
@@ -97,8 +97,9 @@ namespace SynchServiceNS
             m_Logger.EnableLogBuffer = true;
 
             m_Thread.Priority = ThreadPriority.Lowest;
-            m_Thread.Start(Settings.Default);
+            m_Thread.Start(null);
 
+            WriteLine(LOG.INFORMATION, string.Format("Service -> INI Path [{0}] ", m_INI.m_PATH), true);
             WriteLine(LOG.INFORMATION, string.Format("VMs backup thread started [{0}] ", m_Thread.ManagedThreadId), true);
         }
 
@@ -114,7 +115,7 @@ namespace SynchServiceNS
             m_Logger.EnableLogBuffer = true;
 
             m_Thread.Priority = ThreadPriority.Lowest;
-            m_Thread.Start(Settings.Default);
+            m_Thread.Start(null);
 
             WriteLine(LOG.INFORMATION, string.Format("Thread Started [{0}] ", m_Thread.ManagedThreadId), true);
             FormMain.SetTextCallback d = new FormMain.SetTextCallback(t.LogMessage);
@@ -139,26 +140,41 @@ namespace SynchServiceNS
             List<string> vmsRunningList = new List<string>();
             List<string> vmsFullList = new List<string>();
 
-            Settings settings = (Settings)arguments;
+            string VMRun = m_INI.IniReadValue("VM-BACKUP", "VMRun");
+            string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+            string BackupDest = m_INI.IniReadValue("VM-BACKUP", "BackupDest");
 
-            WriteLine(LOG.INFORMATION, string.Format("Generating VMs list at [{0}]", settings.VMList), true);
+            bool ShutdownVMs = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "ShutdownVms"));
+            bool BackupVMs = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "BackupVms"));
+            bool DeleteSnapshot = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "DeleteSnapshot"));
+            bool CreateSnapshot = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "CreateSnapshot"));
+            bool UseFullVMsList = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "UseFullVMsList"));
+            decimal JobRunInterval = decimal.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunInterval"));
+            DateTime JobRunTime = DateTime.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunTime"));
+            bool UseVmwareAuto = bool.Parse(m_INI.IniReadValue("VM-BACKUP", "UseVMWareAuto"));
+
+            string VMList = Path.Combine(WorkingDir, "vmlist.txt");
+            string VmFullList = Path.Combine(WorkingDir, "vmfulllist.txt");
+
+            WriteLine(LOG.INFORMATION, string.Format("vmrun path [{0}]", VMRun), true);
+            WriteLine(LOG.INFORMATION, string.Format("Generating VMs list at [{0}]", VMList), true);
 
             #region --------------- Process VMs Backup ---------------
 
             try
             {
-                if (File.Exists(settings.VMList))
+                if (File.Exists(VMList))
                 {
-                    File.Delete(settings.VMList);
+                    File.Delete(VMList);
                 }
 
                 #region --------------- Get VM List ---------------
 
                 //* Create process to get VM's lists
                 Process process = new Process();
-                process.StartInfo.WorkingDirectory = settings.WorkingDir;
-                process.StartInfo.FileName = settings.VMRun;
-                process.StartInfo.Arguments = string.Format("list");
+                process.StartInfo.WorkingDirectory = WorkingDir;
+                process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
+                process.StartInfo.Arguments = "list";
 
                 int exitCode = RunProcess(process, ListVMOputHandler);
                 WriteLine(LOG.INFORMATION, string.Format("Exit code [{0}] for [{1}]", exitCode, process.StartInfo.Arguments), true);
@@ -166,9 +182,9 @@ namespace SynchServiceNS
                 SleepWithDoEvents(2);
 
 
-                if (File.Exists(settings.VMList))
+                if (File.Exists(VMList))
                 {
-                    using (StreamReader sr = File.OpenText(settings.VMList))
+                    using (StreamReader sr = File.OpenText(VMList))
                     {
                         string line = string.Empty;
                         while ((line = sr.ReadLine()) != null)
@@ -185,9 +201,9 @@ namespace SynchServiceNS
                         WriteLine(LOG.INFORMATION, string.Format("Total running VMs [{0}]", TotalRunningVMs), true);
                     }
 
-                    if (settings.UseFullVMsList && File.Exists(settings.VMFullList))
+                    if (UseFullVMsList && File.Exists(VmFullList))
                     {
-                        using (StreamReader sr = File.OpenText(settings.VMFullList))
+                        using (StreamReader sr = File.OpenText(VmFullList))
                         {
                             string line = string.Empty;
                             while ((line = sr.ReadLine()) != null)
@@ -217,32 +233,25 @@ namespace SynchServiceNS
 
                     FileInfo fi = new FileInfo(sourceVMPath);
                     string sourceDir = fi.Directory.FullName;
-                    string destinationDir = Path.Combine(settings.BackupDest, GetBackupDirNameFromVM(sourceVMPath));
+                    string destinationDir = Path.Combine(BackupDest, GetBackupDirNameFromVM(sourceVMPath));
 
                     
 
                     if (File.Exists(sourceVMPath))
                     {
                         process = new Process();
-                        process.StartInfo.WorkingDirectory = settings.WorkingDir;
-                        process.StartInfo.FileName = settings.VMRun;
+                        process.StartInfo.WorkingDirectory = WorkingDir;
+                        process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
 
-                        if (settings.ShutdownVms)
+                        if (ShutdownVMs)
                         {
-                            process.StartInfo.Arguments = string.Format("stop \"{0}\"", sourceVMPath);
+                            process.StartInfo.Arguments = string.Format("stop \"{0}\" hard", sourceVMPath);
 
                             WriteLine(LOG.INFORMATION, string.Format("Stopping VM [{0}]", sourceVMPath), true);
                         }
                         else
                         {
-                            if (settings.SuspendOption)
-                            {
-                                process.StartInfo.Arguments = string.Format("suspend \"{0}\" hard", sourceVMPath);
-                            }
-                            else
-                            {
-                                process.StartInfo.Arguments = string.Format("suspend \"{0}\" soft", sourceVMPath);
-                            }
+                            process.StartInfo.Arguments = string.Format("suspend \"{0}\" hard", sourceVMPath);
 
                             WriteLine(LOG.INFORMATION, string.Format("suspending VM [{0}]", sourceVMPath), true);
                         }
@@ -266,17 +275,17 @@ namespace SynchServiceNS
 
                     FileInfo fi = new FileInfo(sourceVMPath);
                     string sourceDir = fi.Directory.FullName;
-                    string destinationDir = Path.Combine(settings.BackupDest, GetBackupDirNameFromVM(sourceVMPath));
+                    string destinationDir = Path.Combine(BackupDest, GetBackupDirNameFromVM(sourceVMPath));
 
                     
 
                     if (File.Exists(sourceVMPath))
                     {
-                        if (settings.DeleteSnapshot)
+                        if (DeleteSnapshot)
                         {
                             process = new Process();
-                            process.StartInfo.WorkingDirectory = settings.WorkingDir;
-                            process.StartInfo.FileName = settings.VMRun;
+                            process.StartInfo.WorkingDirectory = WorkingDir;
+                            process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
                             process.StartInfo.Arguments = string.Format("deleteSnapshot \"{0}\" auto-snapshot", sourceVMPath);
 
                             WriteLine(LOG.INFORMATION, string.Format("deleting auto-snapshot from VM [{0}]", sourceVMPath), true);
@@ -302,14 +311,14 @@ namespace SynchServiceNS
 
                     FileInfo fi = new FileInfo(sourceVMPath);
                     string sourceDir = fi.Directory.FullName;
-                    string destinationDir = Path.Combine(settings.BackupDest, GetBackupDirNameFromVM(sourceVMPath));
+                    string destinationDir = Path.Combine(BackupDest, GetBackupDirNameFromVM(sourceVMPath));
 
 
-                    if (settings.CreateSnapshot)
+                    if (CreateSnapshot)
                     {
                         process = new Process();
-                        process.StartInfo.WorkingDirectory = settings.WorkingDir;
-                        process.StartInfo.FileName = settings.VMRun;
+                        process.StartInfo.WorkingDirectory = WorkingDir;
+                        process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
                         process.StartInfo.Arguments = string.Format("snapshot \"{0}\" auto-snapshot", sourceVMPath);
 
                         WriteLine(LOG.INFORMATION, string.Format("Creating auto-snapshot for VM [{0}]", sourceVMPath), true);
@@ -332,16 +341,16 @@ namespace SynchServiceNS
 
                     FileInfo fi = new FileInfo(sourceVMPath);
                     string sourceDir = fi.Directory.FullName;
-                    string destinationDir = Path.Combine(settings.BackupDest, GetBackupDirNameFromVM(sourceVMPath));
+                    string destinationDir = Path.Combine(BackupDest, GetBackupDirNameFromVM(sourceVMPath));
 
-                    if (settings.BackupVms)
+                    if (BackupVMs)
                     {
                         CleanupSourceDir(sourceDir);
 
                         WriteLine(LOG.INFORMATION, string.Format("RoboCopy Source [{0}] Destination [{1}]", sourceDir, destinationDir), true);
 
                         process = new Process();
-                        process.StartInfo.WorkingDirectory = settings.WorkingDir;
+                        process.StartInfo.WorkingDirectory = WorkingDir;
 
                         process.StartInfo.FileName = "robocopy.exe";
                         process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" /MIR /xa:H /xo /ts /x /fp /tee /eta /np /njs /njh /xf *.log *.lck *.scoreboard /xd caches *.lck", sourceDir, destinationDir);
@@ -380,14 +389,14 @@ namespace SynchServiceNS
 
                     FileInfo fi = new FileInfo(sourceVMPath);
                     string sourceDir = fi.Directory.FullName;
-                    string destinationDir = Path.Combine(settings.BackupDest, GetBackupDirNameFromVM(sourceVMPath));
+                    string destinationDir = Path.Combine(BackupDest, GetBackupDirNameFromVM(sourceVMPath));
 
 
                     // start by vmrun hangs VMS amd wont start correctly when
                     // backup is launched manually.
                     // for my setup all the running VMs are in auto start
                     // starting autostart service brings VM UP
-                    if (Properties.Settings.Default.UseVMWareAuto)
+                    if (UseVmwareAuto)
                     {
                         WriteLine(LOG.INFORMATION, string.Format("Restarting VmwareAutostartService to bring up VM [{0}]", sourceVMPath), true);
 
@@ -397,7 +406,7 @@ namespace SynchServiceNS
 
                         SleepWithDoEvents(5);
 
-                        if (!VerifyVMRunning(sourceVMPath))
+                        if (!VerifyVMRunning(sourceVMPath, VMRun, WorkingDir))
                         {
                             WriteLine(LOG.INFORMATION, "", true);
                             WriteLine(LOG.ERROR, string.Format("VM [{0}] is Down. Restart of VmwareAutostartService did not bring it UP", sourceVMPath), true);
@@ -405,7 +414,7 @@ namespace SynchServiceNS
                         }
                         else
                         {
-                            int nowRunning = GetNowRunningVMs();
+                            int nowRunning = GetNowRunningVMs(VMRun, WorkingDir);
                             if (nowRunning == TotalRunningVMs)
                             {
                                 WriteLine(LOG.INFORMATION, "", true);
@@ -419,8 +428,8 @@ namespace SynchServiceNS
                     else
                     {
                         process = new Process();
-                        process.StartInfo.WorkingDirectory = settings.WorkingDir;
-                        process.StartInfo.FileName = settings.VMRun;
+                        process.StartInfo.WorkingDirectory = WorkingDir;
+                        process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
                         process.StartInfo.Arguments = string.Format("start \"{0}\" nogui", sourceVMPath);
 
                         WriteLine(LOG.INFORMATION, string.Format("Starting VM [{0}]", sourceVMPath), true);
@@ -436,6 +445,8 @@ namespace SynchServiceNS
                 #endregion
 
                 CheckAllVmsRunningAgain(TotalRunningVMs);
+
+                WriteLine(LOG.INFORMATION, string.Format("Backup thread finished at [{0}]",DateTime.Now.ToString("yyyy-MMM-dd HH:mm:ss")), true);
 
             }
             catch (Exception ex)
@@ -550,20 +561,24 @@ namespace SynchServiceNS
 
                     WriteLine(LOG.INFORMATION, "Re-started VmwareAutostartService", true);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     WriteLine(LOG.ERROR, string.Format("Failed to start VmwareAutostartService [{0}] ", ex.Message));
                 }
             }
+            else
+            {
+                WriteLine(LOG.INFORMATION, "All required VMs already re-started by VmwareAutostartService", true);
+            }
         }
 
-        private static int GetNowRunningVMs()
+        private static int GetNowRunningVMs(string VMRun, string WorkingDir)
         {
             int result = 0;
 
             Process process = new Process();
-            process.StartInfo.WorkingDirectory = Settings.Default.WorkingDir;
-            process.StartInfo.FileName = Settings.Default.VMRun;
+            process.StartInfo.WorkingDirectory = WorkingDir;
+            process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
             process.StartInfo.Arguments = string.Format("list");
 
             WriteLine(LOG.INFORMATION, string.Format("GetNowRunningVMs -> List RunProcess -> [\"{0}\"]", process.StartInfo.Arguments), true);
@@ -595,13 +610,13 @@ namespace SynchServiceNS
             return result;
         }
 
-        private static bool VerifyVMRunning(string sourceVMPath)
+        private static bool VerifyVMRunning(string sourceVMPath, string VMRun, string WorkingDir)
         {
             bool result = false;
 
             Process process = new Process();
-            process.StartInfo.WorkingDirectory = Settings.Default.WorkingDir;
-            process.StartInfo.FileName = Settings.Default.VMRun;
+            process.StartInfo.WorkingDirectory = WorkingDir;
+            process.StartInfo.FileName = string.Format("\"{0}\"", VMRun);
             process.StartInfo.Arguments = string.Format("list");
 
             WriteLine(LOG.INFORMATION, string.Format("VerifyVMRunning -> List RunProcess -> [\"{0}\"]", process.StartInfo.Arguments), true);
@@ -1313,7 +1328,8 @@ namespace SynchServiceNS
 
         static void ListVMOputHandler(object sendingProcess, DataReceivedEventArgs outLine)
         {
-            TextWriter tw = new StreamWriter(Settings.Default.VMList, true);
+            string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+            TextWriter tw = new StreamWriter(Path.Combine(WorkingDir, "vmlist.txt"), true);
             tw.WriteLine(string.Format("{0}", outLine.Data));
             tw.Close();
         }

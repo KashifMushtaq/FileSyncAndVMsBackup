@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.ServiceProcess;
 using System.Threading;
 using SynchServiceNS.Properties;
@@ -68,21 +69,28 @@ namespace SynchServiceNS
         {
             try
             {
-                double intervalDays = (double)Properties.Settings.Default.JobRunInterval;
-                DateTime dtLastJobRun = Properties.Settings.Default.JobRunTime;
+                double JobRunInterval = double.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunInterval"));
+                DateTime JobRunTime = DateTime.Parse(m_INI.IniReadValue("VM-BACKUP", "JobRunTime"));
 
-                if (DateTime.Now.Ticks >= dtLastJobRun.AddDays(intervalDays).Ticks)
+                if (DateTime.Now.Ticks >= JobRunTime.AddDays(JobRunInterval).Ticks)
                 {
-                    WriteLine(LOG.INFORMATION, string.Format("Backup is due. Date Now [{0}], Scheduled [{1}]", DateTime.Now.ToString("yyyy-MM-dd HH:mm"), dtLastJobRun.ToString("yyyy-MM-dd HH:mm")));
+                    if (DateTime.Now.Hour >= JobRunTime.AddDays(JobRunInterval).Hour && DateTime.Now.Minute >= JobRunTime.AddDays(JobRunInterval).Minute)
+                    {
+                        WriteLine(LOG.INFORMATION, string.Format("Backup is due. Date Now [{0}], Scheduled [{1}]", DateTime.Now.ToString("yyyy-MM-dd HH:mm"), JobRunTime.AddDays(JobRunInterval).ToString("yyyy-MM-dd HH:mm")));
 
-                    Properties.Settings.Default.JobRunTime = dtLastJobRun.AddDays(intervalDays); // Next run DateTime
-                    Properties.Settings.Default.Save();
+                        DateTime NextBackupTime = JobRunTime.AddDays(JobRunInterval); // Next run DateTime
+                        m_INI.IniWriteValue("VM-BACKUP", "JobRunTime", NextBackupTime.ToString("yyyy-MMM-dd HH:mm:ss"));
 
-                    clsCopy.RunBackupJob();
+                        clsCopy.RunBackupJob();
+                    }
+                    else
+                    {
+                        WriteLine(LOG.INFORMATION, string.Format("Backup job is due today [{0}] at time [{1}]. Remaining time [{2}]", DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("HH:mm"), (JobRunTime - DateTime.Now).Hours + ":" + (JobRunTime - DateTime.Now).Minutes));
+                    }
                 }
                 else
                 {
-                    WriteLine(LOG.DEBUG, string.Format("Backup job is not due. Date Now [{0}] Scheduled [{1}]", DateTime.Now.ToString("yyyy-MM-dd HH:mm"), dtLastJobRun.ToString("yyyy-MM-dd HH:mm")));
+                    WriteLine(LOG.DEBUG, string.Format("Backup job is not due. Date Now [{0}], Interval [{1}], Scheduled [{2}]", DateTime.Now.ToString("yyyy-MM-dd HH:mm"), JobRunInterval, JobRunTime.AddDays(JobRunInterval).ToString("yyyy-MM-dd HH:mm")));
                 }
             }
             catch (Exception ex)

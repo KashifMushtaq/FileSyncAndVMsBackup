@@ -49,7 +49,7 @@
             this.button_Remove = new System.Windows.Forms.Button();
             this.listView_SavedJobs = new System.Windows.Forms.ListView();
             this.tabPage_BackupVMs = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label_UseAutoService = new System.Windows.Forms.Label();
             this.checkBox_UseVmwareAuto = new System.Windows.Forms.CheckBox();
             this.label_RunningVMs = new System.Windows.Forms.Label();
             this.richTextBox_RunningVMs = new System.Windows.Forms.RichTextBox();
@@ -85,7 +85,8 @@
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.Timer_Vms = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_SuspendOption = new System.Windows.Forms.CheckBox();
+            this.label_JobExeTime = new System.Windows.Forms.Label();
+            this.label_NextJobExeTime = new System.Windows.Forms.Label();
             this.tabControl_Log.SuspendLayout();
             this.tabPage_Log.SuspendLayout();
             this.tabPage_Jobs.SuspendLayout();
@@ -333,8 +334,9 @@
             // 
             // tabPage_BackupVMs
             // 
-            this.tabPage_BackupVMs.Controls.Add(this.checkBox_SuspendOption);
-            this.tabPage_BackupVMs.Controls.Add(this.label1);
+            this.tabPage_BackupVMs.Controls.Add(this.label_NextJobExeTime);
+            this.tabPage_BackupVMs.Controls.Add(this.label_JobExeTime);
+            this.tabPage_BackupVMs.Controls.Add(this.label_UseAutoService);
             this.tabPage_BackupVMs.Controls.Add(this.checkBox_UseVmwareAuto);
             this.tabPage_BackupVMs.Controls.Add(this.label_RunningVMs);
             this.tabPage_BackupVMs.Controls.Add(this.richTextBox_RunningVMs);
@@ -374,15 +376,15 @@
             this.tabPage_BackupVMs.Text = "Backup VMs";
             this.tabPage_BackupVMs.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // label_UseAutoService
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 241);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(118, 13);
-            this.label1.TabIndex = 68;
-            this.label1.Text = "Use Auto Start Service:";
+            this.label_UseAutoService.AutoSize = true;
+            this.label_UseAutoService.Location = new System.Drawing.Point(16, 241);
+            this.label_UseAutoService.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_UseAutoService.Name = "label_UseAutoService";
+            this.label_UseAutoService.Size = new System.Drawing.Size(118, 13);
+            this.label_UseAutoService.TabIndex = 68;
+            this.label_UseAutoService.Text = "Use Auto Start Service:";
             // 
             // checkBox_UseVmwareAuto
             // 
@@ -470,11 +472,11 @@
             // label_BackupTime
             // 
             this.label_BackupTime.AutoSize = true;
-            this.label_BackupTime.Location = new System.Drawing.Point(72, 291);
+            this.label_BackupTime.Location = new System.Drawing.Point(31, 291);
             this.label_BackupTime.Name = "label_BackupTime";
-            this.label_BackupTime.Size = new System.Drawing.Size(62, 13);
+            this.label_BackupTime.Size = new System.Drawing.Size(103, 13);
             this.label_BackupTime.TabIndex = 60;
-            this.label_BackupTime.Text = "Run Job at:";
+            this.label_BackupTime.Text = "Job Execution Time:";
             // 
             // dateTimePicker_BackupTime
             // 
@@ -520,7 +522,7 @@
             0,
             0,
             0});
-            this.numericUpDown_BackupInterval.ValueChanged += new System.EventHandler(this.numericUpDown__BackupInterval_ValueChanged);
+            this.numericUpDown_BackupInterval.ValueChanged += new System.EventHandler(this.numericUpDown_BackupInterval_ValueChanged);
             // 
             // label_BackupInterval
             // 
@@ -677,7 +679,6 @@
             this.checkBox_ShutdownVMs.TabIndex = 37;
             this.checkBox_ShutdownVMs.Text = "( Unchecked - Suspend VMs)";
             this.checkBox_ShutdownVMs.UseVisualStyleBackColor = true;
-            this.checkBox_ShutdownVMs.CheckedChanged += new System.EventHandler(this.checkBox_ShutdownVMs_CheckedChanged);
             // 
             // label__LogDir
             // 
@@ -750,19 +751,22 @@
             this.Timer_Vms.Interval = 10000;
             this.Timer_Vms.Tick += new System.EventHandler(this.Timer_Vms_Tick);
             // 
-            // checkBox_SuspendOption
+            // label_JobExeTime
             // 
-            this.checkBox_SuspendOption.AutoSize = true;
-            this.checkBox_SuspendOption.Checked = true;
-            this.checkBox_SuspendOption.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_SuspendOption.Location = new System.Drawing.Point(337, 134);
-            this.checkBox_SuspendOption.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox_SuspendOption.Name = "checkBox_SuspendOption";
-            this.checkBox_SuspendOption.Size = new System.Drawing.Size(125, 17);
-            this.checkBox_SuspendOption.TabIndex = 69;
-            this.checkBox_SuspendOption.Text = "Suspend VMs - hard)";
-            this.checkBox_SuspendOption.UseVisualStyleBackColor = true;
-            this.checkBox_SuspendOption.Visible = false;
+            this.label_JobExeTime.AutoSize = true;
+            this.label_JobExeTime.Location = new System.Drawing.Point(455, 291);
+            this.label_JobExeTime.Name = "label_JobExeTime";
+            this.label_JobExeTime.Size = new System.Drawing.Size(108, 13);
+            this.label_JobExeTime.TabIndex = 69;
+            this.label_JobExeTime.Text = "Next Execution Time:";
+            // 
+            // label_NextJobExeTime
+            // 
+            this.label_NextJobExeTime.AutoSize = true;
+            this.label_NextJobExeTime.Location = new System.Drawing.Point(569, 291);
+            this.label_NextJobExeTime.Name = "label_NextJobExeTime";
+            this.label_NextJobExeTime.Size = new System.Drawing.Size(0, 13);
+            this.label_NextJobExeTime.TabIndex = 70;
             // 
             // FormMain
             // 
@@ -841,10 +845,11 @@
         private System.Windows.Forms.Label label_BackupTimeHHmm;
         private System.Windows.Forms.Label label_RunningVMs;
         private System.Windows.Forms.RichTextBox richTextBox_RunningVMs;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_UseAutoService;
         private System.Windows.Forms.CheckBox checkBox_UseVmwareAuto;
         private System.Windows.Forms.Timer Timer_Vms;
-        private System.Windows.Forms.CheckBox checkBox_SuspendOption;
+        private System.Windows.Forms.Label label_NextJobExeTime;
+        private System.Windows.Forms.Label label_JobExeTime;
     }
 }
 
