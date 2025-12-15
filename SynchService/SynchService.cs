@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SynchServiceNS.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.ServiceProcess;
 using System.Threading;
-using SynchServiceNS.Properties;
 
 namespace SynchServiceNS
 {
@@ -21,9 +22,11 @@ namespace SynchServiceNS
 
         AutoResetEvent autoEventMonitor = new AutoResetEvent(false);
         AutoResetEvent autoEventMonitorVMBackup = new AutoResetEvent(false);
+        AutoResetEvent autoEventMonitorCleanLogs = new AutoResetEvent(false);
 
         private static Timer m_monitorThread;
         private static Timer m_monitorThreadVMBackup;
+        private static Timer m_monitorLogFilesThread;
 
         public SynchService()
         {
@@ -37,7 +40,8 @@ namespace SynchServiceNS
             {
                 //create a timer thread which ticks every minutes
                 m_monitorThread = new Timer(new TimerCallback(Timer_Tick), autoEventMonitor, 10000, 60000);
-                m_monitorThreadVMBackup = new Timer(new TimerCallback(Timer_Tick_VMBackup), autoEventMonitorVMBackup, 10000, 60000);
+                m_monitorThreadVMBackup = new Timer(new TimerCallback(Timer_Tick_VMBackup), autoEventMonitorVMBackup, 10000, int.Parse(TimeSpan.FromHours(1).TotalMilliseconds.ToString()));
+                m_monitorLogFilesThread = new Timer(new TimerCallback(Timer_Tick_CleanLogs), autoEventMonitorCleanLogs, 10000, 60000);
                 m_Logger.EnableLogBuffer = false;
                 WriteLine(LOG.INFORMATION, "Synch Service Started");
             }
@@ -99,6 +103,36 @@ namespace SynchServiceNS
 
             }
         }
+
+        public static void Timer_Tick_CleanLogs(Object stateInfo)
+        {
+            String logFileRootDir = Path.GetDirectoryName(m_Logger.LogFilePath);
+            int daysOlderThan = 07;
+            DateTime thresholdDate = DateTime.Now.AddDays(-daysOlderThan);
+
+            DirectoryInfo directory = new DirectoryInfo(logFileRootDir);
+            // Retrieve files older than X days
+            var oldFiles = directory.GetFiles()
+                .Where(file => file.LastWriteTime < thresholdDate)
+                .ToList();
+
+            foreach (var file in oldFiles)
+            {
+                try
+                {
+                    if (file.Extension.Equals(".log", StringComparison.OrdinalIgnoreCase))
+                    {
+                        file.Delete();
+                        WriteLine(LOG.INFORMATION, string.Format("Timer_Tick_CleanLogs -> Log File [{0}] removed", file.FullName));
+                    }
+                }            
+                catch (Exception ex)
+                {
+                    WriteLine(LOG.ERROR, string.Format("Timer_Tick_CleanLogs -> Error [{0}]", ex.Message));
+                }
+            }
+        }
+
 
         public static void Timer_Tick(Object stateInfo)
         {
