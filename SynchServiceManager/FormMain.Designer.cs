@@ -563,7 +563,7 @@
             // label_UseFullList
             // 
             this.label_UseFullList.AutoSize = true;
-            this.label_UseFullList.Location = new System.Drawing.Point(48, 220);
+            this.label_UseFullList.Location = new System.Drawing.Point(66, 219);
             this.label_UseFullList.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_UseFullList.Name = "label_UseFullList";
             this.label_UseFullList.Size = new System.Drawing.Size(67, 13);
@@ -576,9 +576,11 @@
             this.checkBox_UseFullList.Location = new System.Drawing.Point(146, 218);
             this.checkBox_UseFullList.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_UseFullList.Name = "checkBox_UseFullList";
-            this.checkBox_UseFullList.Size = new System.Drawing.Size(178, 17);
+            this.checkBox_UseFullList.Size = new System.Drawing.Size(243, 17);
             this.checkBox_UseFullList.TabIndex = 48;
-            this.checkBox_UseFullList.Text = "(Selected VMs on VMs List Tab)";
+            this.checkBox_UseFullList.Text = "(Selected VMs on VMs List Management Tab)";
+            this.toolTip.SetToolTip(this.checkBox_UseFullList, "Selected VM(s) in the list on management tab are saved as text file in work folde" +
+        "r.");
             this.checkBox_UseFullList.UseVisualStyleBackColor = true;
             this.checkBox_UseFullList.CheckedChanged += new System.EventHandler(this.checkBox_UseFullList_CheckedChanged);
             // 
