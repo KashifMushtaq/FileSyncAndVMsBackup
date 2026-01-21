@@ -154,6 +154,7 @@ namespace SynchServiceNS
 
 
             loadAllJobs();
+            LoadVMsList();
 
             if (listView_SavedJobs.Items.Count > 0) this.listView_SavedJobs.Items[0].Selected = true;
 
@@ -222,6 +223,20 @@ namespace SynchServiceNS
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        //Loads and select already saved VMs from file
+        private void LoadVMsList()
+        {
+            try
+            {
+                button_Refresh_VMsList_Click(this, null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         #endregion
 
         bool DoesServiceExist(string serviceName, string machineName)
@@ -369,7 +384,7 @@ namespace SynchServiceNS
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -396,7 +411,7 @@ namespace SynchServiceNS
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -439,7 +454,7 @@ namespace SynchServiceNS
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -475,7 +490,7 @@ namespace SynchServiceNS
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -493,7 +508,7 @@ namespace SynchServiceNS
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -525,7 +540,7 @@ namespace SynchServiceNS
                     catch (Exception ex)
                     {
 
-                        MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                 }
@@ -697,7 +712,7 @@ namespace SynchServiceNS
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -709,7 +724,7 @@ namespace SynchServiceNS
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -720,6 +735,9 @@ namespace SynchServiceNS
                 listBox_VMsList.Items.Clear();
                 string userProfileFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 string VMListPath = userProfileFolder + @"\VMware\inventory.vmls";
+
+                string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+                string VmFullList = Path.Combine(WorkingDir, "vmfulllist.txt");
 
                 if (File.Exists(VMListPath))
                 {
@@ -743,18 +761,37 @@ namespace SynchServiceNS
 
                     if (listBox_VMsList.Items.Count > 0)
                     {
-                        MessageBox.Show(string.Format("List refreshed. Total VMs {0}", listBox_VMsList.Items.Count), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        using (StreamReader sr = File.OpenText(VmFullList))
+                        {
+                            string line = string.Empty;
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                if (!string.IsNullOrEmpty(line) && line.Contains(@"\") && listBox_VMsList.Items.Contains(line))
+                                {
+                                    listBox_VMsList.SelectedItems.Add(line);
+                                }
+                            }
+                        }
+
+                        if (e != null)
+                        {
+                            MessageBox.Show(string.Format("List refreshed. Total VMs {0}", listBox_VMsList.Items.Count), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
                 else
                 {
-                    MessageBox.Show(string.Format("No VMs List at {0}", VMListPath), "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (e != null)
+                    {
+                        MessageBox.Show(string.Format("No VMs List at {0}", VMListPath), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                 }
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -775,7 +812,7 @@ namespace SynchServiceNS
         {
             if (listBox_VMsList.SelectedIndices.Count == 0)
             {
-                MessageBox.Show("Please select VM(s) to backup.", "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please select VM(s) to backup.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -800,7 +837,7 @@ namespace SynchServiceNS
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -840,7 +877,7 @@ namespace SynchServiceNS
         {
             if (listBox_VMsList.SelectedIndices.Count == 0)
             {
-                MessageBox.Show("Please select VM(s) to backup.", "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please select VM(s) to backup.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -866,7 +903,7 @@ namespace SynchServiceNS
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }

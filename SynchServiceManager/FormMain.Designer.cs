@@ -84,6 +84,7 @@
             this.textBox_VmRun = new System.Windows.Forms.TextBox();
             this.label_VmRun = new System.Windows.Forms.Label();
             this.tabPage_VMsList = new System.Windows.Forms.TabPage();
+            this.button_SaveList = new System.Windows.Forms.Button();
             this.button_VMsList_Backup = new System.Windows.Forms.Button();
             this.button_VMsList_UnselectAll = new System.Windows.Forms.Button();
             this.button_VMsList_SelectAll = new System.Windows.Forms.Button();
@@ -94,7 +95,6 @@
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.Timer_Vms = new System.Windows.Forms.Timer(this.components);
-            this.button_SaveList = new System.Windows.Forms.Button();
             this.tabControl_Log.SuspendLayout();
             this.tabPage_Log.SuspendLayout();
             this.tabPage_Jobs.SuspendLayout();
@@ -780,13 +780,24 @@
             this.tabPage_VMsList.Name = "tabPage_VMsList";
             this.tabPage_VMsList.Size = new System.Drawing.Size(1139, 650);
             this.tabPage_VMsList.TabIndex = 3;
-            this.tabPage_VMsList.Text = "VMs List";
+            this.tabPage_VMsList.Text = "VMs List Management";
             this.tabPage_VMsList.UseVisualStyleBackColor = true;
+            // 
+            // button_SaveList
+            // 
+            this.button_SaveList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_SaveList.Location = new System.Drawing.Point(955, 562);
+            this.button_SaveList.Name = "button_SaveList";
+            this.button_SaveList.Size = new System.Drawing.Size(75, 23);
+            this.button_SaveList.TabIndex = 6;
+            this.button_SaveList.Text = "Save List";
+            this.button_SaveList.UseVisualStyleBackColor = true;
+            this.button_SaveList.Click += new System.EventHandler(this.button_SaveList_Click);
             // 
             // button_VMsList_Backup
             // 
-            this.button_VMsList_Backup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_VMsList_Backup.Location = new System.Drawing.Point(969, 562);
+            this.button_VMsList_Backup.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_VMsList_Backup.Location = new System.Drawing.Point(807, 562);
             this.button_VMsList_Backup.Name = "button_VMsList_Backup";
             this.button_VMsList_Backup.Size = new System.Drawing.Size(142, 23);
             this.button_VMsList_Backup.TabIndex = 5;
@@ -797,7 +808,7 @@
             // button_VMsList_UnselectAll
             // 
             this.button_VMsList_UnselectAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button_VMsList_UnselectAll.Location = new System.Drawing.Point(410, 562);
+            this.button_VMsList_UnselectAll.Location = new System.Drawing.Point(491, 562);
             this.button_VMsList_UnselectAll.Name = "button_VMsList_UnselectAll";
             this.button_VMsList_UnselectAll.Size = new System.Drawing.Size(75, 23);
             this.button_VMsList_UnselectAll.TabIndex = 4;
@@ -808,7 +819,7 @@
             // button_VMsList_SelectAll
             // 
             this.button_VMsList_SelectAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button_VMsList_SelectAll.Location = new System.Drawing.Point(491, 562);
+            this.button_VMsList_SelectAll.Location = new System.Drawing.Point(572, 562);
             this.button_VMsList_SelectAll.Name = "button_VMsList_SelectAll";
             this.button_VMsList_SelectAll.Size = new System.Drawing.Size(75, 23);
             this.button_VMsList_SelectAll.TabIndex = 3;
@@ -819,7 +830,7 @@
             // button_Refresh_VMsList
             // 
             this.button_Refresh_VMsList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button_Refresh_VMsList.Location = new System.Drawing.Point(572, 562);
+            this.button_Refresh_VMsList.Location = new System.Drawing.Point(1036, 562);
             this.button_Refresh_VMsList.Name = "button_Refresh_VMsList";
             this.button_Refresh_VMsList.Size = new System.Drawing.Size(75, 23);
             this.button_Refresh_VMsList.TabIndex = 2;
@@ -859,17 +870,6 @@
             this.Timer_Vms.Enabled = true;
             this.Timer_Vms.Interval = 10000;
             this.Timer_Vms.Tick += new System.EventHandler(this.Timer_Vms_Tick);
-            // 
-            // button_SaveList
-            // 
-            this.button_SaveList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button_SaveList.Location = new System.Drawing.Point(653, 562);
-            this.button_SaveList.Name = "button_SaveList";
-            this.button_SaveList.Size = new System.Drawing.Size(75, 23);
-            this.button_SaveList.TabIndex = 6;
-            this.button_SaveList.Text = "Save List";
-            this.button_SaveList.UseVisualStyleBackColor = true;
-            this.button_SaveList.Click += new System.EventHandler(this.button_SaveList_Click);
             // 
             // FormMain
             // 
