@@ -785,7 +785,7 @@
             // 
             // button_SaveList
             // 
-            this.button_SaveList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_SaveList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_SaveList.Location = new System.Drawing.Point(955, 562);
             this.button_SaveList.Name = "button_SaveList";
             this.button_SaveList.Size = new System.Drawing.Size(75, 23);
@@ -796,7 +796,7 @@
             // 
             // button_VMsList_Backup
             // 
-            this.button_VMsList_Backup.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_VMsList_Backup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_VMsList_Backup.Location = new System.Drawing.Point(807, 562);
             this.button_VMsList_Backup.Name = "button_VMsList_Backup";
             this.button_VMsList_Backup.Size = new System.Drawing.Size(142, 23);
@@ -829,7 +829,7 @@
             // 
             // button_Refresh_VMsList
             // 
-            this.button_Refresh_VMsList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_Refresh_VMsList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Refresh_VMsList.Location = new System.Drawing.Point(1036, 562);
             this.button_Refresh_VMsList.Name = "button_Refresh_VMsList";
             this.button_Refresh_VMsList.Size = new System.Drawing.Size(75, 23);
