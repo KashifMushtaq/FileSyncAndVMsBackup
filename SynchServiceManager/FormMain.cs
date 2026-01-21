@@ -651,7 +651,9 @@ namespace SynchServiceNS
         private void button_RunBackup_Click(object sender, EventArgs e)
         {
             this.button_RunBackup.Enabled = false;
-            
+            this.button_VMsList_Backup.Enabled = false;
+            this.button_SaveBackup.Enabled = false;
+
             this.tabControl_Log.SelectedTab = tabPage_Log;
 
             clsCopy.RunBackupJob(this);
@@ -663,6 +665,8 @@ namespace SynchServiceNS
             this.richTextBox_Status.AppendText("Job completed.\r\n");
 
             this.button_RunBackup.Enabled = true;
+            this.button_VMsList_Backup.Enabled = true;
+            this.button_SaveBackup.Enabled = true;
         }
 
         private void button_SaveBackup_Click(object sender, EventArgs e)
@@ -803,6 +807,7 @@ namespace SynchServiceNS
 
             this.button_RunBackup.Enabled = false;
             this.button_VMsList_Backup.Enabled = false;
+            this.button_SaveBackup.Enabled = false;
 
             //temporary save flage in INI for thread
             if (!this.checkBox_UseFullList.Checked)
@@ -826,6 +831,7 @@ namespace SynchServiceNS
                 m_INI.IniWriteValue("VM-BACKUP", "UseFullVMsList", "False");
             }
 
+            this.button_SaveBackup.Enabled = true;
             this.button_RunBackup.Enabled = true;
             this.button_VMsList_Backup.Enabled = true;
         }
