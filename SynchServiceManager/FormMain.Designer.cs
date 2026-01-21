@@ -49,6 +49,8 @@
             this.button_Remove = new System.Windows.Forms.Button();
             this.listView_SavedJobs = new System.Windows.Forms.ListView();
             this.tabPage_BackupVMs = new System.Windows.Forms.TabPage();
+            this.label_NextJobExeTime = new System.Windows.Forms.Label();
+            this.label_JobExeTime = new System.Windows.Forms.Label();
             this.label_UseAutoService = new System.Windows.Forms.Label();
             this.checkBox_UseVmwareAuto = new System.Windows.Forms.CheckBox();
             this.label_RunningVMs = new System.Windows.Forms.Label();
@@ -81,18 +83,25 @@
             this.button_VmRun = new System.Windows.Forms.Button();
             this.textBox_VmRun = new System.Windows.Forms.TextBox();
             this.label_VmRun = new System.Windows.Forms.Label();
+            this.tabPage_VMsList = new System.Windows.Forms.TabPage();
+            this.button_VMsList_Backup = new System.Windows.Forms.Button();
+            this.button_VMsList_UnselectAll = new System.Windows.Forms.Button();
+            this.button_VMsList_SelectAll = new System.Windows.Forms.Button();
+            this.button_Refresh_VMsList = new System.Windows.Forms.Button();
+            this.label_VMsList = new System.Windows.Forms.Label();
+            this.listBox_VMsList = new System.Windows.Forms.ListBox();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.Timer_Vms = new System.Windows.Forms.Timer(this.components);
-            this.label_JobExeTime = new System.Windows.Forms.Label();
-            this.label_NextJobExeTime = new System.Windows.Forms.Label();
+            this.button_SaveList = new System.Windows.Forms.Button();
             this.tabControl_Log.SuspendLayout();
             this.tabPage_Log.SuspendLayout();
             this.tabPage_Jobs.SuspendLayout();
             this.groupBox_SavedJobs.SuspendLayout();
             this.tabPage_BackupVMs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_BackupInterval)).BeginInit();
+            this.tabPage_VMsList.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl_Log
@@ -103,6 +112,7 @@
             this.tabControl_Log.Controls.Add(this.tabPage_Log);
             this.tabControl_Log.Controls.Add(this.tabPage_Jobs);
             this.tabControl_Log.Controls.Add(this.tabPage_BackupVMs);
+            this.tabControl_Log.Controls.Add(this.tabPage_VMsList);
             this.tabControl_Log.Location = new System.Drawing.Point(6, 7);
             this.tabControl_Log.Name = "tabControl_Log";
             this.tabControl_Log.SelectedIndex = 0;
@@ -376,6 +386,23 @@
             this.tabPage_BackupVMs.Text = "Backup VMs";
             this.tabPage_BackupVMs.UseVisualStyleBackColor = true;
             // 
+            // label_NextJobExeTime
+            // 
+            this.label_NextJobExeTime.AutoSize = true;
+            this.label_NextJobExeTime.Location = new System.Drawing.Point(569, 291);
+            this.label_NextJobExeTime.Name = "label_NextJobExeTime";
+            this.label_NextJobExeTime.Size = new System.Drawing.Size(0, 13);
+            this.label_NextJobExeTime.TabIndex = 70;
+            // 
+            // label_JobExeTime
+            // 
+            this.label_JobExeTime.AutoSize = true;
+            this.label_JobExeTime.Location = new System.Drawing.Point(455, 291);
+            this.label_JobExeTime.Name = "label_JobExeTime";
+            this.label_JobExeTime.Size = new System.Drawing.Size(108, 13);
+            this.label_JobExeTime.TabIndex = 69;
+            this.label_JobExeTime.Text = "Next Execution Time:";
+            // 
             // label_UseAutoService
             // 
             this.label_UseAutoService.AutoSize = true;
@@ -539,9 +566,9 @@
             this.label_UseFullList.Location = new System.Drawing.Point(48, 220);
             this.label_UseFullList.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_UseFullList.Name = "label_UseFullList";
-            this.label_UseFullList.Size = new System.Drawing.Size(86, 13);
+            this.label_UseFullList.Size = new System.Drawing.Size(67, 13);
             this.label_UseFullList.TabIndex = 49;
-            this.label_UseFullList.Text = "Use Full VM List:";
+            this.label_UseFullList.Text = "Use VM List:";
             // 
             // checkBox_UseFullList
             // 
@@ -549,9 +576,9 @@
             this.checkBox_UseFullList.Location = new System.Drawing.Point(146, 218);
             this.checkBox_UseFullList.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_UseFullList.Name = "checkBox_UseFullList";
-            this.checkBox_UseFullList.Size = new System.Drawing.Size(343, 17);
+            this.checkBox_UseFullList.Size = new System.Drawing.Size(178, 17);
             this.checkBox_UseFullList.TabIndex = 48;
-            this.checkBox_UseFullList.Text = "(Reads fullvmlist.txt file from the working directory for the list of VMs)";
+            this.checkBox_UseFullList.Text = "(Selected VMs on VMs List Tab)";
             this.checkBox_UseFullList.UseVisualStyleBackColor = true;
             this.checkBox_UseFullList.CheckedChanged += new System.EventHandler(this.checkBox_UseFullList_CheckedChanged);
             // 
@@ -740,6 +767,88 @@
             this.label_VmRun.TabIndex = 0;
             this.label_VmRun.Text = "VMWare vmrun location:";
             // 
+            // tabPage_VMsList
+            // 
+            this.tabPage_VMsList.Controls.Add(this.button_SaveList);
+            this.tabPage_VMsList.Controls.Add(this.button_VMsList_Backup);
+            this.tabPage_VMsList.Controls.Add(this.button_VMsList_UnselectAll);
+            this.tabPage_VMsList.Controls.Add(this.button_VMsList_SelectAll);
+            this.tabPage_VMsList.Controls.Add(this.button_Refresh_VMsList);
+            this.tabPage_VMsList.Controls.Add(this.label_VMsList);
+            this.tabPage_VMsList.Controls.Add(this.listBox_VMsList);
+            this.tabPage_VMsList.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_VMsList.Name = "tabPage_VMsList";
+            this.tabPage_VMsList.Size = new System.Drawing.Size(1139, 650);
+            this.tabPage_VMsList.TabIndex = 3;
+            this.tabPage_VMsList.Text = "VMs List";
+            this.tabPage_VMsList.UseVisualStyleBackColor = true;
+            // 
+            // button_VMsList_Backup
+            // 
+            this.button_VMsList_Backup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_VMsList_Backup.Location = new System.Drawing.Point(969, 562);
+            this.button_VMsList_Backup.Name = "button_VMsList_Backup";
+            this.button_VMsList_Backup.Size = new System.Drawing.Size(142, 23);
+            this.button_VMsList_Backup.TabIndex = 5;
+            this.button_VMsList_Backup.Text = "Backup Selected VMs";
+            this.button_VMsList_Backup.UseVisualStyleBackColor = true;
+            this.button_VMsList_Backup.Click += new System.EventHandler(this.button_VMsList_Backup_Click);
+            // 
+            // button_VMsList_UnselectAll
+            // 
+            this.button_VMsList_UnselectAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_VMsList_UnselectAll.Location = new System.Drawing.Point(410, 562);
+            this.button_VMsList_UnselectAll.Name = "button_VMsList_UnselectAll";
+            this.button_VMsList_UnselectAll.Size = new System.Drawing.Size(75, 23);
+            this.button_VMsList_UnselectAll.TabIndex = 4;
+            this.button_VMsList_UnselectAll.Text = "Unselect All";
+            this.button_VMsList_UnselectAll.UseVisualStyleBackColor = true;
+            this.button_VMsList_UnselectAll.Click += new System.EventHandler(this.button_VMsList_UnselectAll_Click);
+            // 
+            // button_VMsList_SelectAll
+            // 
+            this.button_VMsList_SelectAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_VMsList_SelectAll.Location = new System.Drawing.Point(491, 562);
+            this.button_VMsList_SelectAll.Name = "button_VMsList_SelectAll";
+            this.button_VMsList_SelectAll.Size = new System.Drawing.Size(75, 23);
+            this.button_VMsList_SelectAll.TabIndex = 3;
+            this.button_VMsList_SelectAll.Text = "Select All";
+            this.button_VMsList_SelectAll.UseVisualStyleBackColor = true;
+            this.button_VMsList_SelectAll.Click += new System.EventHandler(this.button_VMsList_SelectAll_Click);
+            // 
+            // button_Refresh_VMsList
+            // 
+            this.button_Refresh_VMsList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_Refresh_VMsList.Location = new System.Drawing.Point(572, 562);
+            this.button_Refresh_VMsList.Name = "button_Refresh_VMsList";
+            this.button_Refresh_VMsList.Size = new System.Drawing.Size(75, 23);
+            this.button_Refresh_VMsList.TabIndex = 2;
+            this.button_Refresh_VMsList.Text = "Refresh List";
+            this.button_Refresh_VMsList.UseVisualStyleBackColor = true;
+            this.button_Refresh_VMsList.Click += new System.EventHandler(this.button_Refresh_VMsList_Click);
+            // 
+            // label_VMsList
+            // 
+            this.label_VMsList.AutoSize = true;
+            this.label_VMsList.Location = new System.Drawing.Point(36, 16);
+            this.label_VMsList.Name = "label_VMsList";
+            this.label_VMsList.Size = new System.Drawing.Size(147, 13);
+            this.label_VMsList.TabIndex = 1;
+            this.label_VMsList.Text = "VMs in VMWare Workstation:";
+            // 
+            // listBox_VMsList
+            // 
+            this.listBox_VMsList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox_VMsList.FormattingEnabled = true;
+            this.listBox_VMsList.Location = new System.Drawing.Point(36, 35);
+            this.listBox_VMsList.Name = "listBox_VMsList";
+            this.listBox_VMsList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBox_VMsList.Size = new System.Drawing.Size(1075, 511);
+            this.listBox_VMsList.Sorted = true;
+            this.listBox_VMsList.TabIndex = 0;
+            // 
             // timer
             // 
             this.timer.Interval = 5000;
@@ -751,22 +860,16 @@
             this.Timer_Vms.Interval = 10000;
             this.Timer_Vms.Tick += new System.EventHandler(this.Timer_Vms_Tick);
             // 
-            // label_JobExeTime
+            // button_SaveList
             // 
-            this.label_JobExeTime.AutoSize = true;
-            this.label_JobExeTime.Location = new System.Drawing.Point(455, 291);
-            this.label_JobExeTime.Name = "label_JobExeTime";
-            this.label_JobExeTime.Size = new System.Drawing.Size(108, 13);
-            this.label_JobExeTime.TabIndex = 69;
-            this.label_JobExeTime.Text = "Next Execution Time:";
-            // 
-            // label_NextJobExeTime
-            // 
-            this.label_NextJobExeTime.AutoSize = true;
-            this.label_NextJobExeTime.Location = new System.Drawing.Point(569, 291);
-            this.label_NextJobExeTime.Name = "label_NextJobExeTime";
-            this.label_NextJobExeTime.Size = new System.Drawing.Size(0, 13);
-            this.label_NextJobExeTime.TabIndex = 70;
+            this.button_SaveList.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button_SaveList.Location = new System.Drawing.Point(653, 562);
+            this.button_SaveList.Name = "button_SaveList";
+            this.button_SaveList.Size = new System.Drawing.Size(75, 23);
+            this.button_SaveList.TabIndex = 6;
+            this.button_SaveList.Text = "Save List";
+            this.button_SaveList.UseVisualStyleBackColor = true;
+            this.button_SaveList.Click += new System.EventHandler(this.button_SaveList_Click);
             // 
             // FormMain
             // 
@@ -787,6 +890,8 @@
             this.tabPage_BackupVMs.ResumeLayout(false);
             this.tabPage_BackupVMs.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_BackupInterval)).EndInit();
+            this.tabPage_VMsList.ResumeLayout(false);
+            this.tabPage_VMsList.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -850,6 +955,14 @@
         private System.Windows.Forms.Timer Timer_Vms;
         private System.Windows.Forms.Label label_NextJobExeTime;
         private System.Windows.Forms.Label label_JobExeTime;
+        private System.Windows.Forms.TabPage tabPage_VMsList;
+        private System.Windows.Forms.ListBox listBox_VMsList;
+        private System.Windows.Forms.Label label_VMsList;
+        private System.Windows.Forms.Button button_Refresh_VMsList;
+        private System.Windows.Forms.Button button_VMsList_SelectAll;
+        private System.Windows.Forms.Button button_VMsList_UnselectAll;
+        private System.Windows.Forms.Button button_VMsList_Backup;
+        private System.Windows.Forms.Button button_SaveList;
     }
 }
 

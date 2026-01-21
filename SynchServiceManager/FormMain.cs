@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Diagnostics;
+using System.IO;
+using System.Net.NetworkInformation;
 using System.ServiceProcess;
 using System.Threading;
-using System.IO;
-using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace SynchServiceNS
 {
@@ -704,6 +706,162 @@ namespace SynchServiceNS
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button_Refresh_VMsList_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                listBox_VMsList.Items.Clear();
+                string userProfileFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string VMListPath = userProfileFolder + @"\VMware\inventory.vmls";
+
+                if (File.Exists(VMListPath))
+                {
+                    using (StreamReader sr = File.OpenText(VMListPath))
+                    {
+                        string line = string.Empty;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            if (!string.IsNullOrEmpty(line) && line.Contains(".config = ") && line.Contains(".vmx")) // only add paths to vmx files
+                            {
+                                string vmPath = line.Substring(line.IndexOf("=") + 2);
+                                vmPath = vmPath.Replace("\"", "");
+                                FileInfo file = new FileInfo(vmPath);
+                                if (file.Exists)
+                                {
+                                    listBox_VMsList.Items.Add(file.FullName);
+                                }
+                            }
+                        }
+                    }
+
+                    if (listBox_VMsList.Items.Count > 0)
+                    {
+                        MessageBox.Show(string.Format("List refreshed. Total VMs {0}", listBox_VMsList.Items.Count), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(string.Format("No VMs List at {0}", VMListPath), "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button_VMsList_SelectAll_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < listBox_VMsList.Items.Count; i++)
+            {
+                listBox_VMsList.SelectedIndices.Add(i);
+            }
+        }
+
+        private void button_VMsList_UnselectAll_Click(object sender, EventArgs e)
+        {
+            listBox_VMsList.SelectedIndices.Clear();
+        }
+
+        private void button_VMsList_Backup_Click(object sender, EventArgs e)
+        {
+            if (listBox_VMsList.SelectedIndices.Count == 0)
+            {
+                MessageBox.Show("Please select VM(s) to backup.", "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
+            string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+            string VmFullList = Path.Combine(WorkingDir, "vmfulllist.txt");
+
+            try
+            {
+                if (File.Exists(VmFullList))
+                { 
+                    File.Delete(VmFullList);
+                }
+
+                StreamWriter streamWriter = File.CreateText(VmFullList);
+                foreach (string selectedVM in listBox_VMsList.SelectedItems)
+                {
+                    streamWriter.WriteLine(selectedVM);
+                }
+                streamWriter.Close();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
+            this.button_RunBackup.Enabled = false;
+            this.button_VMsList_Backup.Enabled = false;
+
+            //temporary save flage in INI for thread
+            if (!this.checkBox_UseFullList.Checked)
+            {
+                m_INI.IniWriteValue("VM-BACKUP", "UseFullVMsList", "True");
+            }
+
+            this.tabControl_Log.SelectedTab = tabPage_Log;
+
+            clsCopy.RunBackupJob(this);
+            Application.DoEvents();
+            string LastMessage = string.Empty;
+            string NewMessage = string.Empty;
+
+            richTextBox_Status.AppendText(m_logger.getLogText());
+            this.richTextBox_Status.AppendText("Selected VM(s) Backup Job completed.\r\n");
+
+            //temporary save flage in INI for thread
+            if (!this.checkBox_UseFullList.Checked)
+            {
+                m_INI.IniWriteValue("VM-BACKUP", "UseFullVMsList", "False");
+            }
+
+            this.button_RunBackup.Enabled = true;
+            this.button_VMsList_Backup.Enabled = true;
+        }
+
+        private void button_SaveList_Click(object sender, EventArgs e)
+        {
+            if (listBox_VMsList.SelectedIndices.Count == 0)
+            {
+                MessageBox.Show("Please select VM(s) to backup.", "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string WorkingDir = m_INI.IniReadValue("VM-BACKUP", "WorkingDir");
+            string VmFullList = Path.Combine(WorkingDir, "vmfulllist.txt");
+
+            try
+            {
+                if (File.Exists(VmFullList))
+                {
+                    File.Delete(VmFullList);
+                }
+
+                StreamWriter streamWriter = File.CreateText(VmFullList);
+                foreach (string selectedVM in listBox_VMsList.SelectedItems)
+                {
+                    streamWriter.WriteLine(selectedVM);
+                }
+                streamWriter.Close();
+
+                MessageBox.Show(string.Format("Selected VM(s) list saved at [{0}]", VmFullList), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "Eror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
     }
